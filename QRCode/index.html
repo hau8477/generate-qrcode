@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tạo Mã QR Code</title>
+    <style>
+        :root {
+            --bcg-color: #001122;
+            --primary-color: #155e75;
+            --border-radius: 8px;
+            --secondary-color: #fff;
+            --border-color: #7fb7c9;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: sans-serif;
+        }
+
+        body {
+            margin: 0px;
+            padding: 0px;
+            width: 100%;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            background-color: white;
+            align-items: center;
+        }
+
+        label {
+            color: black !important;
+            font-weight: bold;
+        }
+
+        .wapper {
+            background-color: #a1ddff;
+            padding: 30px;
+            width: 700px;
+            border-radius: var(--border-radius);
+            min-height: 800px;
+        }
+
+        .wapper h1 {
+            font-size: 25px;
+            text-align: center;
+            color: var(--secondary-color);
+            margin-bottom: 20px;
+            text-transform: uppercase;
+        }
+
+        .wapper input {
+            width: 100%;
+            margin-block: 12px;
+        }
+
+        .wapper input, select {
+            padding: 8px;
+            border-radius: var(--border-radius);
+            font-size: 18px;
+            outline: none;
+            border: 2px solid var(--border-color);
+        }
+
+        .wapper label {
+            font-size: 20px;
+        }
+
+        .footer-qr {
+            display: flex;
+            justify-content: center;
+            margin-top: 3rem;
+        }
+
+        .footer-qr a {
+            background-color: var(--secondary-color);
+            text-decoration: none;
+            font-size: 20px;
+            padding: 15px 35px;
+            margin-inline: 2px;
+            color: var(--primary-color);
+            font-weight: bold;
+            border-radius: var(--border-radius);
+            width: 300px;
+            text-align: center;
+        }
+
+        .qr-body {
+            display: grid;
+            place-items: center;
+            padding: 20px;
+        }
+
+        .qr-body img {
+            max-width: 100%;
+            max-height: 100%;
+            margin-block: 10px;
+            padding: 20px;
+            border: solid 0.5px var(--border-color);
+        }
+
+        @media screen and (max-width: 520px) {
+            .box {
+                width: 80%;
+            }
+
+            .qr-footer a {
+                padding: 12px;
+                font-size: 16px;
+            }
+        }
+
+        .input-container {
+            display: flex;
+            align-items: center;
+        }
+
+        .label {
+            margin-right: 10px;
+        }
+
+        .color-preview {
+            width: 20px;
+            height: 20px;
+            margin-left: 10px;
+        }
+    </style>
+</head>
+<body>
+<div class="wapper">
+    <h1 style="color: black">Tạo Mã QR Code</h1>
+
+    <label for="qr_text">Nội dung</label>
+    <input type="text" class="qr_text" id="qr_text" placeholder=""/>
+
+    <label for="width">Chiều rộng</label>
+    <input type="number" class="qr_text" id="width" placeholder=""/>
+
+    <label for="height">Chiều dài</label>
+    <input type="number" class="qr_text" id="height" placeholder=""/>
+
+    <div class="input-container">
+        <label for="colorLight" style="width: 200px">Màu nền</label>
+        <span>
+            <input type="color" style="margin-left: 5rem;" class="qr_text" id="colorLight"
+                   value="#ffffff" placeholder="" onchange="changeLightShow()"/>
+        </span>
+        <div style="width: 20px;margin-left: 7rem; height: 20px;background-color: white" id="colorLightShow"></div>
+    </div>
+
+    <div class="input-container">
+        <label for="colorDark" style="width: 200px">Màu hiển thị</label>
+        <span>
+             <input type="color" style="margin-left: 5rem;" class="qr_text" id="colorDark"
+                    value="#000000" placeholder="" onchange="changeDarkShow()"/>
+        </span>
+        <div style="width: 20px;margin-left: 7rem; height: 20px; background-color: black" id="colorDarkShow"></div>
+    </div>
+
+    <div>
+        <div class="body-qr" style="display: flex;justify-content: center;margin: 2rem"></div>
+        <div class="footer-qr" style="display: flex;justify-content: space-between;">
+            <a href="" id="generate">Tạo QR Code</a>
+            <a href="" id="download" download="QR_Code.png">Tải về</a>
+        </div>
+    </div>
+    <script>
+        const qrText = document.getElementById('qr_text');
+        const generate = document.getElementById('generate');
+        const download = document.getElementById('download');
+        const qrcodebox = document.querySelector('.body-qr');
+
+        generate.addEventListener('click', (e) => {
+            e.preventDefault();
+            isEmptyInput();
+        });
+
+        download.addEventListener('click', () => {
+            let img = document.querySelector('.body-qr img');
+            if (img !== null) {
+                let imgAtrr = img.getAttribute('src');
+                download.setAttribute("href", imgAtrr);
+            }
+        });
+
+        function changeLightShow() {
+            document.getElementById('colorLightShow').style.backgroundColor = document.getElementById('colorLight').value;
+            isEmptyInput();
+        }
+
+        function changeDarkShow() {
+            document.getElementById('colorDarkShow').style.backgroundColor = document.getElementById('colorDark').value;
+            isEmptyInput();
+        }
+
+        function isEmptyInput() {
+            qrText.value.length > 0 ? generateQRCode() : alert('Vui lòng nhập văn bản hoặc URL để tạo QR Code');
+        }
+
+        function generateQRCode() {
+            let width = document.getElementById('width').value;
+            let height = document.getElementById('height').value;
+            console.log(document.getElementById('colorLight').value, document.getElementById('colorDark').value)
+            let colorLight = document.getElementById('colorLight').value;
+            let colorDark = document.getElementById('colorDark').value;
+            qrcodebox.innerHTML = "";
+            new QRCode(qrcodebox, {
+                text: qrText.value,
+                height: height,
+                width: width,
+                colorLight: colorLight,
+                colorDark: colorDark,
+            });
+        }
+
+    </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+</body>
+</html>
