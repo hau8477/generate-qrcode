@@ -42,7 +42,7 @@
             padding: 30px;
             width: 700px;
             border-radius: var(--border-radius);
-            min-height: 800px;
+            height: 800px;
         }
 
         .wapper h1 {
@@ -51,6 +51,7 @@
             color: var(--secondary-color);
             margin-bottom: 20px;
             text-transform: uppercase;
+            margin-top: 3rem;
         }
 
         .wapper input {
@@ -144,10 +145,12 @@
     <input type="number" class="qr_text" id="height" placeholder=""/>
 
     <div class="input-container">
-        <label for="colorLight" style="width: 200px">Màu nền</label>
+        <label for="colorLight" style="width: 200px">Màu nền
+        </label>
         <span>
             <input type="color" style="margin-left: 5rem;" class="qr_text" id="colorLight"
                    value="#ffffff" placeholder="" onchange="changeLightShow()"/>
+
         </span>
         <div style="width: 20px;margin-left: 7rem; height: 20px;background-color: white" id="colorLightShow"></div>
     </div>
@@ -166,6 +169,7 @@
         <div class="footer-qr" style="display: flex;justify-content: space-between;">
             <a href="" id="generate">Tạo QR Code</a>
             <a href="" id="download" download="QR_Code.png">Tải về</a>
+            <a onclick="changeLightShowTransparent()">Nền trong</a>
         </div>
     </div>
     <script>
@@ -201,10 +205,27 @@
             qrText.value.length > 0 ? generateQRCode() : alert('Vui lòng nhập văn bản hoặc URL để tạo QR Code');
         }
 
+        function changeLightShowTransparent() {
+            if (qrText.value.length > 0) {
+                let width = document.getElementById('width').value;
+                let height = document.getElementById('height').value;
+                let colorDark = document.getElementById('colorDark').value;
+                qrcodebox.innerHTML = "";
+                new QRCode(qrcodebox, {
+                    text: qrText.value,
+                    height: height,
+                    width: width,
+                    colorLight: "transparent",
+                    colorDark: colorDark,
+                });
+            } else {
+                alert('Vui lòng nhập văn bản hoặc URL để tạo QR Code');
+            }
+        }
+
         function generateQRCode() {
             let width = document.getElementById('width').value;
             let height = document.getElementById('height').value;
-            console.log(document.getElementById('colorLight').value, document.getElementById('colorDark').value)
             let colorLight = document.getElementById('colorLight').value;
             let colorDark = document.getElementById('colorDark').value;
             qrcodebox.innerHTML = "";
